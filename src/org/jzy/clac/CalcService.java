@@ -1,8 +1,8 @@
 package org.jzy.clac;
 
-import javax.swing.*;
-
 import java.awt.event.ActionEvent;
+
+import javax.swing.*;
 
 /**
  * 计算器处理逻辑
@@ -10,13 +10,10 @@ import java.awt.event.ActionEvent;
  * @author JZY
  */
 public class CalcService {
-	/** 计算器窗口 */
-	private static JFrame frame = CalcFrame.getInstance();
-
 	/**
 	 * 按键处理逻辑
 	 *
-	 * @param e
+	 * @param e 事件对象
 	 */
 	public static void actionPerformed(ActionEvent e) {
 		// 获取被点击的按钮
@@ -24,7 +21,7 @@ public class CalcService {
 		// 获取按钮上的文字
 		String name = source.getText();
 		// 获取文本框里的文字
-		JTextField jTextField = (JTextField) frame.getContentPane().getComponent(0);
+		JTextField jTextField = (JTextField) CalcFrame.getInstance().getContentPane().getComponent(0);
 		String expr = jTextField.getText();
 
 		// 各个按钮不同的处理逻辑
@@ -43,6 +40,7 @@ public class CalcService {
 				if (!expr.endsWith(")")) {
 					// 禁止除0
 					if (expr.endsWith("/") && "0".equals(name)) {
+						System.out.println("禁止除0");
 					} else {
 						expr += name;
 					}
@@ -56,7 +54,7 @@ public class CalcService {
 				break;
 			case "-":
 				// 减号：空、数字和左右括号后可输入
-				if (expr.isEmpty() || expr.matches("^.*[\\d,(,)]$")) {
+				if (expr.isEmpty() || expr.matches("^.*[\\d()]$")) {
 					expr += name;
 				}
 				break;
@@ -94,7 +92,7 @@ public class CalcService {
 				break;
 			case "(":
 				// 左括号按钮：刚开始或者四则和左括号结尾
-				if (expr.isEmpty() || expr.matches("^.*[+,-,*,/,(]$")) {
+				if (expr.isEmpty() || expr.matches("^.*[+\\-*/(]$")) {
 					expr += name;
 				}
 				break;
@@ -123,14 +121,13 @@ public class CalcService {
 	 * @return 计算结果
 	 */
 	private static double parse(String expr) {
-		int index = -1;
+		int index;
 		// 去括号
 		index = expr.indexOf("(");
 		if (index >= 0) {
-			int left = index;
 			int right = expr.lastIndexOf(")");
-			double temp = parse(expr.substring(left + 1, right));
-			expr = expr.substring(0, left) + temp + expr.substring(right + 1);
+			double temp = parse(expr.substring(index + 1, right));
+			expr = expr.substring(0, index) + temp + expr.substring(right + 1);
 			return parse(expr);
 		}
 		// 加法

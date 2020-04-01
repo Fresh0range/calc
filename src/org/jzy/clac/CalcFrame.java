@@ -1,8 +1,8 @@
 package org.jzy.clac;
 
-import javax.swing.*;
-
 import java.awt.*;
+
+import javax.swing.*;
 
 /**
  * 计算器窗口
@@ -28,7 +28,7 @@ public class CalcFrame extends JFrame {
 	/**
 	 * 私有构造方法
 	 *
-	 * @throws HeadlessException
+	 * @throws HeadlessException 异常
 	 */
 	private CalcFrame() throws HeadlessException {
 		super();
@@ -42,7 +42,7 @@ public class CalcFrame extends JFrame {
 		//设置文本不可编辑
 		jTextField.setEditable(false);
 		// 设置文本字体
-		jTextField.setFont(new Font(null, 0, 20));
+		jTextField.setFont(new Font(null, Font.PLAIN, 20));
 		// 设置文本框位置和大小
 		jTextField.setBounds(new Rectangle(0, 0, 300, 50));
 		// 设置文本对齐方式
@@ -78,7 +78,7 @@ public class CalcFrame extends JFrame {
 		JButton jButtonEqual = setButton(new JButton("="));
 		JButton jButtonAdd = setButton(new JButton("+"));
 		JButton jButtonSub = setButton(new JButton("-"));
-		JButton jButtonMuti = setButton(new JButton("*"));
+		JButton jButtonMulti = setButton(new JButton("*"));
 		JButton jButtonDiv = setButton(new JButton("/"));
 		JButton jButtonCancel = setButton(new JButton("X"));
 		JButton jButtonClear = setButton(new JButton("C"));
@@ -97,7 +97,7 @@ public class CalcFrame extends JFrame {
 		jPanel.add(jButton4);
 		jPanel.add(jButton5);
 		jPanel.add(jButton6);
-		jPanel.add(jButtonMuti);
+		jPanel.add(jButtonMulti);
 		jPanel.add(jButton1);
 		jPanel.add(jButton2);
 		jPanel.add(jButton3);
@@ -129,7 +129,7 @@ public class CalcFrame extends JFrame {
 	 */
 	public JButton setButton(JButton jButton) {
 		// 设置字体大小
-		jButton.setFont(new Font(null, 0, 20));
+		jButton.setFont(new Font(null, Font.PLAIN, 20));
 		// 点击时不显示内部的线
 		jButton.setFocusPainted(false);
 		// 设置按钮监听
