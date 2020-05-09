@@ -125,7 +125,19 @@ public class CalcService {
 		// 去括号
 		index = expr.indexOf("(");
 		if (index >= 0) {
-			int right = expr.lastIndexOf(")");
+			int right = index, i = 0;
+			while (true) {
+				char c = expr.charAt(right);
+				if (c == '(') {
+					i++;
+				} else if (c == ')') {
+					i--;
+					if (i == 0) {
+						break;
+					}
+				}
+				right++;
+			}
 			double temp = parse(expr.substring(index + 1, right));
 			expr = expr.substring(0, index) + temp + expr.substring(right + 1);
 			return parse(expr);
