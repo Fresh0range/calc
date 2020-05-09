@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>calc</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #calc {
+            margin: 100px auto;
+            height: 300px;
+            width: 300px;
+            border: black 1px solid;
+        }
+
+        #text {
+            width: 100%;
+            height: 20%;
+            outline: none;
+            font-size: 20px;
+            border: none;
+            text-align: right;
+        }
+
+        #operation {
+            width: 100%;
+            height: 80%;
+            border: 1px; /*表格边框的大小*/
+            border-spacing: 0; /*表格单元的内容和边框之间的空间*/
+        }
+
+        #operation button {
+            width: 100%;
+            height: 100%;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="calc">
+    <input id="text" type="text" value="" readonly>
+    <table id="operation" onclick="service()">
+        <tr>
+            <td>
+                <button>(</button>
+            </td>
+            <td>
+                <button>)</button>
+            </td>
+            <td>
+                <button>C</button>
+            </td>
+            <td>
+                <button>+</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button>7</button>
+            </td>
+            <td>
+                <button>8</button>
+            </td>
+            <td>
+                <button>9</button>
+            </td>
+            <td>
+                <button>-</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button>4</button>
+            </td>
+            <td>
+                <button>5</button>
+            </td>
+            <td>
+                <button>6</button>
+            </td>
+            <td>
+                <button>*</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button>1</button>
+            </td>
+            <td>
+                <button>2</button>
+            </td>
+            <td>
+                <button>3</button>
+            </td>
+            <td>
+                <button>/</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button>X</button>
+            </td>
+            <td>
+                <button>.</button>
+            </td>
+            <td>
+                <button>0</button>
+            </td>
+            <td>
+                <button>=</button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    function service() {
+        let textEle = document.getElementById("text");
+        let expr = textEle.getAttribute("value");
+        let name = document.activeElement.textContent;
+        switch (name) {
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+            case "0":
+                // 数字按钮：不能跟在右括号后边
+                if (!expr.endsWith(")")) {
+                    // 禁止除0
+                    if (expr.endsWith("/") && "0" === name) {
+                        console.log("禁止除0");
+                    } else {
+                        expr += name;
+                    }
+                }
+                break;
+            case ".":
+                // 小数点按钮：数字后，且一个数字只能有一个小数点
+                if (/^.*\d$/.test(expr) && !/^.*\d\.\d$/.test(expr)) {
+                    expr += name;
+                }
+                break;
+            case "-":
+                // 减号：空、数字和左右括号后可输入
+                if (expr.length === 0 || /^.*[\d()]$/.test(expr)) {
+                    expr += name;
+                }
+                break;
+            case "+":
+            case "*":
+            case "/":
+                // 四则按钮（减号单独处理）：数字和右括号结尾可以写
+                if (/^.*[\d,)]$/.test(expr)) {
+                    expr += name;
+                }
+                break;
+            case "=":
+                // 等号计算：数字或者右括号结尾，且左右括号数量相同
+                if (/^.*[\d,)]$/.test(expr)) {
+                    let left = expr.replace(/[^(]+/g, "").length;
+                    let right = expr.replace(/[^)]+/g, "").length;
+                    if (left === right) {
+                        expr = parse(expr);
+                    }
+                }
+                break;
+            case "C":
+                // 清空按钮
+                expr = "";
+                break;
+            case "X":
+                // 回退按钮
+                if (expr.length > 0) {
+                    expr = expr.substring(0, expr.length - 1);
+                }
+                break;
+            case "(":
+                // 左括号按钮：刚开始或者四则和左括号结尾
+                if (expr.length === 0 || /^.*[+\-*/(]$/.test(expr)) {
+                    expr += name;
+                }
+                break;
+            case ")":
+                // 右括号按钮：数字或者右括号结尾，并且左括号比右括号多
+                if (/^.*\d$/.test(expr) || expr.endsWith(")")) {
+                    let left = expr.replace(/[^(]+/g, "").length;
+                    let right = expr.replace(/[^)]+/g, "").length;
+                    if (left > right) {
+                        expr += name;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        textEle.setAttribute("value", expr);
+    }
+
+
+    function parse(expr) {
+        let index;
+        // 去括号
+        index = expr.indexOf("(");
+        if (index >= 0) {
+            // 获得匹配的右括号的位置
+            let right = index, i = 0;
+            while (true) {
+                let s = expr.charAt(right);
+                if (s === "(") {
+                    i++;
+                } else if (s === ")") {
+                    i--;
+                    if (i === 0) {
+                        break;
+                    }
+                }
+                right++;
+            }
+            let temp = parse(expr.substring(index + 1, right));
+            expr = expr.substring(0, index) + temp + expr.substring(right + 1);
+            return parse(expr);
+        }
+
+        // 加法
+        index = expr.indexOf("+");
+        if (index >= 0) {
+            return parse(expr.substring(0, index)) + parse(expr.substring(index + 1));
+        }
+        // 减法
+        index = expr.lastIndexOf("-");
+        if (index >= 0) {
+            return parse(expr.substring(0, index)) - parse(expr.substring(index + 1));
+        }
+        // 乘法
+        index = expr.indexOf("*");
+        if (index >= 0) {
+            return parse(expr.substring(0, index)) * parse(expr.substring(index + 1));
+        }
+        // 除法
+        index = expr.lastIndexOf("/");
+        if (index >= 0) {
+            return parse(expr.substring(0, index)) / parse(expr.substring(index + 1));
+        }
+        // 数字
+        if (expr.length === 0) {
+            expr = "0";
+        }
+        return expr;
+    }
+</script>
+</body>
+</html>
