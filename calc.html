@@ -145,7 +145,7 @@
                 break;
             case ".":
                 // 小数点按钮：数字后，且一个数字只能有一个小数点
-                if (/^.*\d$/.test(expr) && !/^.*\d\.\d$/.test(expr)) {
+                if (/^.*\d$/.test(expr) && !/^.*\d\.\d+$/.test(expr)) {
                     expr += name;
                 }
                 break;

@@ -48,7 +48,7 @@ public class CalcService {
 				break;
 			case ".":
 				// 小数点按钮：数字后，且一个数字只能有一个小数点
-				if (expr.matches("^.*\\d$") && !expr.matches("^.*\\d\\.\\d$")) {
+				if (expr.matches("^.*\\d$") && !expr.matches("^.*\\d\\.\\d+")) {
 					expr += name;
 				}
 				break;
